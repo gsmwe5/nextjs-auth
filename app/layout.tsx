@@ -27,12 +27,12 @@ function AuthGuard({ children }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!loggedIn && pathname.startsWith("/admin")) {
+    if (!loggedIn) {
       router.push("/login");
     }
   }, [loggedIn, router]);
 
-  // if (!loggedIn) return null; // Prevent rendering if not logged in
+  if (!loggedIn) return null;
 
   return <>{children}</>;
 }
