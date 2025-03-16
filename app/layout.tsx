@@ -3,17 +3,20 @@ import Navbar from "@/app/components/Navbar";
 import { AuthProvider, useAuth } from "@/app/context/AuthContext"; // ✅ Import AuthProvider
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { ThemeProvider } from "@/app/context/ThemeContext";
 import "./globals.css";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="dark:bg-gray-900">
-        <AuthProvider> {/* ✅ Wrap the entire app with AuthProvider */}
-          <Navbar />
-          <AuthGuard> {/* ✅ Wrap the children with AuthGuard */}
-            {children}
-          </AuthGuard>
+        <AuthProvider>
+          <ThemeProvider>
+            <Navbar />
+            <AuthGuard>
+              {children}
+            </AuthGuard>
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>
@@ -32,7 +35,7 @@ function AuthGuard({ children }) {
     }
   }, [loggedIn, router]);
 
-  if (!loggedIn) return null;
+  // if (!loggedIn) return null;
 
   return <>{children}</>;
 }
