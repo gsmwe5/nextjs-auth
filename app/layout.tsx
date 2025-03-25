@@ -1,23 +1,27 @@
 "use client";
+import { useEffect, useState } from "react";
 import Navbar from "@/app/components/Navbar";
 import { AuthProvider, useAuth } from "@/app/context/AuthContext"; // ✅ Import AuthProvider
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
 import { ThemeProvider } from "@/app/context/ThemeContext";
+import SplashScreen from "@/app/components/SplashScreen";
 import "./globals.css";
 
 export default function RootLayout({ children }) {
+  const [isSplashVisible, setIsSplashVisible] = useState(true);
   return (
     <html lang="en">
       <body className="dark:bg-gray-900">
-        <AuthProvider>
-          <ThemeProvider>
-            <Navbar />
-            <AuthGuard>
-              {children}
-            </AuthGuard>
-          </ThemeProvider>
-        </AuthProvider>
+        {isSplashVisible ? (
+          <SplashScreen onFinish={() => setIsSplashVisible(false)} />
+        ) : (
+          <AuthProvider>
+            <ThemeProvider>
+              <Navbar />
+              <AuthGuard>{children}</AuthGuard>
+            </ThemeProvider>
+          </AuthProvider>
+        )}
       </body>
     </html>
   );
@@ -28,14 +32,6 @@ function AuthGuard({ children }) {
   const { loggedIn } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-
-  useEffect(() => {
-    if (!loggedIn) {
-      router.push("/login");
-    }
-  }, [loggedIn, router]);
-
-  // if (!loggedIn) return null;
 
   return <>{children}</>;
 }

@@ -7,13 +7,13 @@ import { useAuth } from "@/app/context/AuthContext";
 export default function LoginPage() {
   const { loggedIn } = useAuth();
   const router = useRouter();
-  const [checkingAuth, setCheckingAuth] = useState(true); // ✅ Prevent initial render
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
     if (loggedIn) {
-      router.push("/admin/dashboard"); // Redirect immediately
+      router.replace("/admin/dashboard"); // ✅ Prevents history stacking (better for auth redirects)
     } else {
-      setCheckingAuth(false); // ✅ Allow rendering login form only if not logged in
+      setCheckingAuth(false);
     }
   }, [loggedIn, router]);
 
