@@ -3,13 +3,13 @@ import bcrypt from "bcrypt";
 
 export async function POST(req) {
   try {
-    const body = await req.json(); // ✅ Read request body
-    console.log("Body received:", body); // ✅ Log received data
+    const body = await req.json();
+    console.log("Body received:", body);
 
-    const { email, password } = body; // ✅ Extract values properly
+    const { fullname, contact_no, std, school_name, email, password } = body;
 
-    if (!email || !password) {
-      return new Response(JSON.stringify({ error: "Missing fields" }), { status: 400 });
+    if (!fullname || !email || !password) {
+      return new Response(JSON.stringify({ error: "Missing required fields" }), { status: 400 });
     }
 
     // Check if the user already exists
@@ -22,8 +22,11 @@ export async function POST(req) {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert the new user into the database
-    await db.execute("INSERT INTO users (email, password) VALUES (?, ?)", [email, hashedPassword]);
+    // Insert the new user into the database with default role "user"
+    await db.execute(
+      "INSERT INTO users (fullname, contact_no, std, school_name, email, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [fullname, contact_no, std, school_name, email, hashedPassword, "user"]
+    );
 
     return new Response(JSON.stringify({ message: "Registration successful" }), { status: 201 });
   } catch (error) {

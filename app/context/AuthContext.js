@@ -41,12 +41,22 @@ export function AuthProvider({ children }) {
     });
 
     if (response.ok) {
-      await checkAuthStatus(); // ✅ Now correctly updates state
-      router.push("/admin/dashboard");
+      const { token } = await response.json();
+      const decodedToken = jwtDecode(token); // ✅ Decode the token first
+      const role = decodedToken.role; // ✅ Extract role immediately
+
+      await checkAuthStatus(); // ✅ Update user state
+
+      console.log("Redirecting user with role:", role);
+      const redirectPath = role === "admin" ? "/admin/dashboard" : "/users/dashboard";
+
+      router.replace(redirectPath); // ✅ Use `replace` instead of `push`
     } else {
       throw new Error("Login failed. Please check your credentials.");
     }
   }, [checkAuthStatus, router]);
+
+
 
   // ✅ Logout function that calls API to remove cookie
   const logout = useCallback(async () => {

@@ -1,10 +1,17 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/app/context/AuthContext";
 
 const RegistrationForm = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({
+    fullname: "",
+    contact_no: "",
+    std: "",
+    school_name: "",
+    email: "",
+    password: "",
+  });
+
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -13,28 +20,24 @@ const RegistrationForm = () => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-    console.log(formData);
+
     // Basic validation
-    if (!formData.email || !formData.password) {
-      setError("Please fill in all fields.");
+    if (!formData.fullname || !formData.email || !formData.password) {
+      setError("Please fill in all required fields.");
       setIsLoading(false);
       return;
     }
 
     try {
-      console.log("🔹 Sending registration request...");
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      console.log(response);
-      console.log("🔹 Response status:", response.status);
-      const data = await response.json();
-      console.log("🔹 Response data:", data);
 
+      const data = await response.json();
       if (response.ok) {
-        router.push("/login"); // Redirect to login page after successful registration
+        router.push("/login"); // Redirect after successful registration
       } else {
         setError(data.error || "Registration failed. Please try again.");
       }
@@ -52,38 +55,81 @@ const RegistrationForm = () => {
       {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Full Name</label>
+          <input
+            type="text"
+            value={formData.fullname}
+            onChange={(e) => setFormData({ ...formData, fullname: e.target.value })}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Contact No.</label>
+          <input
+            type="text"
+            value={formData.contact_no}
+            onChange={(e) => setFormData({ ...formData, contact_no: e.target.value })}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Standard</label>
+          <select
+            value={formData.std}
+            onChange={(e) => setFormData({ ...formData, std: e.target.value })}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+          >
+            <option value="">Select Standard</option>
+            <option value="Junior KG">Junior KG</option>
+            <option value="Senior KG">Senior KG</option>
+            <option value="1st Grade">1st Grade</option>
+            <option value="2nd Grade">2nd Grade</option>
+            <option value="3rd Grade">3rd Grade</option>
+            <option value="4th Grade">4th Grade</option>
+            <option value="5th Grade">5th Grade</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">School Name</label>
+          <input
+            type="text"
+            value={formData.school_name}
+            onChange={(e) => setFormData({ ...formData, school_name: e.target.value })}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Email</label>
           <input
             type="email"
-            id="email"
-            name="email"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             required
           />
         </div>
+
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Password</label>
           <input
             type="password"
-            id="password"
-            name="password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             required
           />
         </div>
+
         <div>
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
           >
             {isLoading ? "Registering..." : "Register"}
           </button>
